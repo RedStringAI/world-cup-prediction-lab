@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.*
+!.env.example
+npm-debug.log*
+coverage/
+dist/
+build/
+output/
+.DS_Store
+Thumbs.db
+.claude/
+.cursor/
+.pytest_cache/

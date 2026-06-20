@@ -1,0 +1,21 @@
+{
+  "name": "world-cup-prediction-lab",
+  "version": "0.1.0",
+  "description": "Open-source World Cup football prediction lab with an explainable FLUX-10 inspired model.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/*.test.cjs"
+  },
+  "keywords": [
+    "world-cup",
+    "football",
+    "prediction",
+    "analytics",
+    "openai-compatible"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  }
+}

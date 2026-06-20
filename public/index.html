@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Cup Prediction Lab</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="appShell">
+    <header class="topbar">
+      <div class="brand">
+        <img src="/assets/redstring-logo-full.png" alt="RedString AI">
+        <div>
+          <strong>World Cup Prediction Lab</strong>
+          <span>FLUX-10 Open Baseline</span>
+        </div>
+      </div>
+      <nav class="navTabs" aria-label="sections">
+        <a href="#workbench">工作台</a>
+        <a href="#backtestPanel">回测</a>
+        <a href="#integrationPanel">接入</a>
+      </nav>
+      <button id="runForecast" class="primaryBtn" type="button">运行推演</button>
+    </header>
+
+    <section id="workbench" class="layoutGrid">
+      <aside class="fixturePane">
+        <div class="paneHead">
+          <div>
+            <span>比赛队列</span>
+            <strong id="fixtureSource">Demo data</strong>
+          </div>
+          <button id="refreshFixtures" class="ghostBtn" type="button">刷新</button>
+        </div>
+        <div id="fixtureList" class="fixtureList"></div>
+        <div class="importBox">
+          <label for="jsonInput">JSON 导入 / 导出</label>
+          <textarea id="jsonInput" spellcheck="false" placeholder='{"fixtures":[...]}'></textarea>
+          <div class="buttonRow">
+            <button id="importJson" class="ghostBtn" type="button">导入</button>
+            <button id="exportJson" class="ghostBtn" type="button">导出</button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="centerPane">
+        <form id="fixtureForm" class="editPanel">
+          <div class="paneHead">
+            <div>
+              <span>比赛参数</span>
+              <strong id="activeMatchName">-</strong>
+            </div>
+            <span id="modelVersion" class="statusBadge">Ready</span>
+          </div>
+
+          <div class="formGrid two">
+            <label>主队 <input id="homeName" type="text"></label>
+            <label>客队 <input id="awayName" type="text"></label>
+            <label>主队 Elo <input id="homeElo" type="number" step="1"></label>
+            <label>客队 Elo <input id="awayElo" type="number" step="1"></label>
+            <label>主队排名 <input id="homeRank" type="number" step="1"></label>
+            <label>客队排名 <input id="awayRank" type="number" step="1"></label>
+          </div>
+
+          <div class="sliderGrid">
+            <label>模型与共识融合 <output id="marketWeightOut">50%</output><input id="marketWeight" type="range" min="0" max="90" value="50"></label>
+            <label>主队场景修正 <output id="homeTiltOut">0</output><input id="homeTilt" type="range" min="-12" max="12" value="0"></label>
+            <label>节奏修正 <output id="tempoTiltOut">0</output><input id="tempoTilt" type="range" min="-8" max="8" value="0"></label>
+            <label>平局保护 <output id="drawTiltOut">0</output><input id="drawTilt" type="range" min="-8" max="8" value="0"></label>
+          </div>
+
+          <div class="formGrid four">
+            <label>主胜共识 <input id="homeMarket" type="number" min="0" max="100" step="1"></label>
+            <label>平局共识 <input id="drawMarket" type="number" min="0" max="100" step="1"></label>
+            <label>客胜共识 <input id="awayMarket" type="number" min="0" max="100" step="1"></label>
+            <label>总进球中枢 <input id="totalGoals" type="number" min="1" max="5" step="0.05"></label>
+          </div>
+
+          <div id="factorEditor" class="factorEditor"></div>
+        </form>
+
+        <section class="resultPanel">
+          <div class="paneHead">
+            <div>
+              <span>概率面</span>
+              <strong id="forecastSummary">等待运行</strong>
+            </div>
+            <span id="confidenceBadge" class="statusBadge">-</span>
+          </div>
+          <div id="probabilityBars" class="probabilityBars"></div>
+          <div class="metricGrid">
+            <div><b id="xgHome">-</b><span>主队 xG</span></div>
+            <div><b id="xgAway">-</b><span>客队 xG</span></div>
+            <div><b id="teamDelta">-</b><span>强度差</span></div>
+            <div><b id="marketAgreement">-</b><span>共识一致度</span></div>
+          </div>
+          <div id="scorePaths" class="scorePaths"></div>
+        </section>
+      </section>
+
+      <aside class="insightPane">
+        <section class="toolPanel">
+          <div class="paneHead">
+            <div>
+              <span>十维雷达</span>
+              <strong id="radarTitle">Factor profile</strong>
+            </div>
+          </div>
+          <canvas id="factorRadar" width="360" height="300" aria-label="factor radar"></canvas>
+          <div id="driverList" class="driverList"></div>
+        </section>
+
+        <section class="toolPanel">
+          <div class="paneHead">
+            <div>
+              <span>AI 解读</span>
+              <strong id="aiSource">local-template</strong>
+            </div>
+            <button id="aiExplain" class="ghostBtn" type="button">生成</button>
+          </div>
+          <p id="aiText" class="analysisText">运行推演后显示结构化解释。</p>
+        </section>
+
+        <section id="integrationPanel" class="toolPanel">
+          <div class="paneHead">
+            <div>
+              <span>推荐接入</span>
+              <strong>OpenAI-compatible</strong>
+            </div>
+          </div>
+          <a class="fluxBanner" href="https://fluxtoken.ai" target="_blank" rel="noopener">
+            <img src="/assets/fluxtoken-banner.png" alt="FluxToken OpenAI-compatible multi-model gateway">
+          </a>
+          <p class="smallText">可选使用 FluxToken 作为 Claude / GPT 等模型的统一 API 网关。服务端配置 <code>AI_BASE_URL</code>、<code>AI_API_KEY</code>、<code>AI_MODEL</code> 后即可调用 AI 解读。</p>
+        </section>
+      </aside>
+    </section>
+
+    <section class="lowerGrid">
+      <section id="backtestPanel" class="widePanel">
+        <div class="paneHead">
+          <div>
+            <span>回测</span>
+            <strong>Brier / RPS / Top3</strong>
+          </div>
+          <div class="actualScore">
+            <input id="actualHome" type="number" min="0" max="12" value="1">
+            <span>:</span>
+            <input id="actualAway" type="number" min="0" max="12" value="1">
+            <button id="runBacktest" class="ghostBtn" type="button">计算</button>
+          </div>
+        </div>
+        <div id="backtestMetrics" class="metricGrid"></div>
+        <div id="backtestRows" class="tableRows"></div>
+      </section>
+
+      <section class="widePanel">
+        <div class="paneHead">
+          <div>
+            <span>比分热力图</span>
+            <strong>score matrix</strong>
+          </div>
+        </div>
+        <div id="matrixGrid" class="matrixGrid"></div>
+      </section>
+
+      <section id="cardPreview" class="cardPreview">
+        <div class="previewTop">
+          <span>FLUX-10</span>
+          <b id="previewMatch">-</b>
+        </div>
+        <div id="previewPick" class="previewPick">-</div>
+        <div id="previewScores" class="previewScores"></div>
+        <p id="previewNote">AI 技术能力展示，模型推演仅供技术交流，不作现实依据。</p>
+      </section>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
