@@ -22,7 +22,9 @@ The app is provider-neutral. Its optional AI explanation layer works with any Op
 
 ## What It Does
 
-World Cup Prediction Lab is a local football analytics workbench: ten-factor scoring, Elo delta, calibrated draw floors, double-Poisson score matrix, scenario sliders, JSON import/export, backtest metrics, and optional AI explanations.
+World Cup Prediction Lab is a local football analytics workbench: menu-driven match selection, ten-factor scoring, Elo delta, calibrated draw floors, double-Poisson score matrix, scenario sliders, backtest metrics, developer JSON tools, and optional AI explanations.
+
+Normal users choose a fixture from the match menu and click to forecast. JSON import/export is kept inside the advanced developer tools area for batch fixtures, automation, and integrations.
 
 ## Preview
 
@@ -60,7 +62,7 @@ Copy-Item -Recurse skills/world-cup-prediction "$env:USERPROFILE\.codex\skills\w
 Then ask Codex:
 
 ```text
-Use $world-cup-prediction to forecast this match JSON and backtest the result.
+Use $world-cup-prediction to analyze a selected match; for automation, forecast this match JSON and backtest the result.
 ```
 
 The bundled scripts also run standalone:

@@ -16,6 +16,10 @@ const state = {
   activeIndex: 0,
   activeFixture: null,
   forecast: null,
+  filters: {
+    competition: 'all',
+    date: 'all',
+  },
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -23,6 +27,9 @@ const $ = (selector) => document.querySelector(selector);
 const nodes = {
   fixtureList: $('#fixtureList'),
   fixtureSource: $('#fixtureSource'),
+  matchMenu: $('#matchMenu'),
+  competitionFilter: $('#competitionFilter'),
+  dateFilter: $('#dateFilter'),
   fixtureForm: $('#fixtureForm'),
   activeMatchName: $('#activeMatchName'),
   modelVersion: $('#modelVersion'),
@@ -73,6 +80,16 @@ function deepClone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }[char]));
+}
+
 async function getJson(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`${url} ${response.status}`);
@@ -94,16 +111,60 @@ async function loadFixtures() {
   const payload = await getJson('/api/fixtures');
   state.fixtures = payload.fixtures || [];
   state.activeIndex = 0;
+  state.filters.competition = 'all';
+  state.filters.date = 'all';
   nodes.fixtureSource.textContent = `${payload.source} · ${payload.count} matches`;
+  renderFixtureFilters();
   renderFixtureList();
   selectFixture(0);
 }
 
+function fixtureDateKey(fixture) {
+  const date = new Date(fixture.kickoff);
+  if (Number.isNaN(date.getTime())) return fixture.kickoff || 'unknown';
+  return new Intl.DateTimeFormat('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
+
+function renderFixtureFilters() {
+  const competitions = [...new Set(state.fixtures.map((fixture) => fixture.competition || 'Other'))].sort();
+  const dates = [...new Set(state.fixtures.map(fixtureDateKey))].sort();
+
+  nodes.competitionFilter.innerHTML = [
+    '<option value="all">全部赛事</option>',
+    ...competitions.map((competition) => `<option value="${escapeHtml(competition)}">${escapeHtml(competition)}</option>`),
+  ].join('');
+  nodes.dateFilter.innerHTML = [
+    '<option value="all">全部日期</option>',
+    ...dates.map((date) => `<option value="${escapeHtml(date)}">${escapeHtml(date)}</option>`),
+  ].join('');
+  nodes.competitionFilter.value = state.filters.competition;
+  nodes.dateFilter.value = state.filters.date;
+}
+
+function filterFixtures() {
+  return state.fixtures
+    .map((fixture, index) => ({ fixture, index }))
+    .filter(({ fixture }) => {
+      const competitionOk = state.filters.competition === 'all' || fixture.competition === state.filters.competition;
+      const dateOk = state.filters.date === 'all' || fixtureDateKey(fixture) === state.filters.date;
+      return competitionOk && dateOk;
+    });
+}
+
 function renderFixtureList() {
-  nodes.fixtureList.innerHTML = state.fixtures.map((fixture, index) => `
-    <button class="fixtureItem ${index === state.activeIndex ? 'active' : ''}" type="button" data-index="${index}">
+  const rows = filterFixtures();
+  if (!rows.length) {
+    nodes.fixtureList.innerHTML = '<p class="emptyState">没有匹配的比赛，请调整筛选。</p>';
+    return;
+  }
+  nodes.fixtureList.innerHTML = rows.map(({ fixture, index }) => `
+    <button class="fixtureItem ${index === state.activeIndex ? 'active' : ''}" type="button" data-index="${index}" aria-label="分析预测 ${fixture.home.name} vs ${fixture.away.name}">
       <b>${fixture.home.name} vs ${fixture.away.name}</b>
       <span>${formatDate(fixture.kickoff)} · ${fixture.competition}</span>
+      <em>分析预测</em>
     </button>
   `).join('');
   nodes.fixtureList.querySelectorAll('button').forEach((button) => {
@@ -124,11 +185,17 @@ function formatDate(value) {
 }
 
 function selectFixture(index) {
+  if (!state.fixtures[index]) return;
   state.activeIndex = index;
   state.activeFixture = deepClone(state.fixtures[index]);
   renderFixtureList();
   fillForm(state.activeFixture);
   runForecast();
+}
+
+function selectFirstFilteredFixture() {
+  const first = filterFixtures()[0];
+  if (first) selectFixture(first.index);
 }
 
 function fillForm(fixture) {
@@ -393,6 +460,9 @@ function importJson() {
   if (!Array.isArray(fixtures) || !fixtures.length) throw new Error('JSON must contain fixtures');
   state.fixtures = fixtures;
   state.activeIndex = 0;
+  state.filters.competition = 'all';
+  state.filters.date = 'all';
+  renderFixtureFilters();
   renderFixtureList();
   selectFixture(0);
 }
@@ -416,6 +486,16 @@ function renderSliderOutputs() {
 function bindEvents() {
   nodes.refreshFixtures.addEventListener('click', loadFixtures);
   nodes.runForecast.addEventListener('click', runForecast);
+  nodes.competitionFilter.addEventListener('change', () => {
+    state.filters.competition = nodes.competitionFilter.value;
+    renderFixtureList();
+    selectFirstFilteredFixture();
+  });
+  nodes.dateFilter.addEventListener('change', () => {
+    state.filters.date = nodes.dateFilter.value;
+    renderFixtureList();
+    selectFirstFilteredFixture();
+  });
   nodes.fixtureForm.addEventListener('input', (event) => {
     if (event.target.matches('input')) updateActiveFixtureFromForm();
   });

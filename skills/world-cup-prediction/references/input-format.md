@@ -1,8 +1,10 @@
 # Input Format
 
+This is a developer automation reference for CLI scripts, tests, batch imports, and integrations. The public app should stay menu-driven: users choose the match they want from the fixture menu, then run the forecast from that selected fixture.
+
 ## Forecast
 
-Pass JSON to `scripts/forecast.cjs` through stdin:
+Pass developer JSON to `scripts/forecast.cjs` through stdin:
 
 ```json
 {

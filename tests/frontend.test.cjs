@@ -13,9 +13,13 @@ test('frontend exposes a usable product workbench, not a static landing page', (
 
   [
     'fixtureList',
+    'matchMenu',
+    'competitionFilter',
+    'dateFilter',
     'fixtureForm',
     'marketWeight',
     'runForecast',
+    'developerTools',
     'importJson',
     'exportJson',
     'probabilityBars',
@@ -47,4 +51,30 @@ test('frontend exposes a usable product workbench, not a static landing page', (
   for (const banned of bannedTerms) {
     assert.equal(all.includes(banned), false, `frontend should not contain private/sensitive term: ${banned}`);
   }
+});
+
+test('frontend makes menu-driven match selection the primary user flow', () => {
+  const html = fs.readFileSync(path.join(root, 'public', 'index.html'), 'utf8');
+  const js = fs.readFileSync(path.join(root, 'public', 'app.js'), 'utf8');
+  const css = fs.readFileSync(path.join(root, 'public', 'styles.css'), 'utf8');
+
+  assert.match(html, /id="matchMenu"/);
+  assert.match(html, /id="competitionFilter"/);
+  assert.match(html, /id="dateFilter"/);
+  assert.match(html, /选择赛事/);
+  assert.match(html, /分析预测/);
+  assert.match(js, /renderFixtureFilters/);
+  assert.match(js, /filterFixtures/);
+  assert.match(js, /selectFixture/);
+  assert.match(css, /\.matchMenu/);
+
+  const developerToolsStart = html.indexOf('<details id="developerTools"');
+  const jsonInputAt = html.indexOf('id="jsonInput"');
+  const developerToolsEnd = html.indexOf('</details>', developerToolsStart);
+
+  assert.ok(developerToolsStart > -1, 'JSON tools must be inside an advanced developer details panel');
+  assert.ok(jsonInputAt > developerToolsStart, 'jsonInput should come after developerTools starts');
+  assert.ok(jsonInputAt < developerToolsEnd, 'jsonInput should be nested inside developerTools');
+  assert.ok(html.indexOf('id="matchMenu"') < developerToolsStart, 'match menu should appear before JSON developer tools');
+  assert.equal(html.includes('<label for="jsonInput">JSON 导入 / 导出</label>'), false, 'JSON import/export should not be a primary visible sidebar block');
 });

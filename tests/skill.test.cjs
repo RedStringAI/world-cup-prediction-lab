@@ -16,6 +16,17 @@ test('world-cup-prediction skill metadata is valid and searchable', () => {
   assert.doesNotMatch(skill, /\[TODO/);
 });
 
+test('skill docs frame JSON as developer automation, not the public product flow', () => {
+  const skill = fs.readFileSync(path.join(skillDir, 'SKILL.md'), 'utf8');
+  const inputFormat = fs.readFileSync(path.join(skillDir, 'references', 'input-format.md'), 'utf8');
+  const docs = `${skill}\n${inputFormat}`;
+
+  assert.match(docs, /menu-driven/i);
+  assert.match(docs, /developer/i);
+  assert.match(docs, /automation/i);
+  assert.doesNotMatch(skill, /Run a single forecast from JSON/);
+});
+
 test('skill forecast script returns probabilities and score paths from JSON stdin', () => {
   const fixture = {
     id: 'skill-demo',

@@ -31,7 +31,8 @@ body {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -199,6 +200,23 @@ button {
   gap: 8px;
 }
 
+.matchMenu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+}
+
+.matchMenu label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
 .fixtureItem {
   width: 100%;
   text-align: left;
@@ -228,6 +246,39 @@ button {
   font-weight: 750;
 }
 
+.fixtureItem em {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--red);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.emptyState {
+  margin: 0;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--muted);
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.developerTools {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.developerTools summary {
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .importBox {
   margin-top: 12px;
   display: grid;
@@ -243,7 +294,8 @@ button {
 }
 
 textarea,
-input {
+input,
+select {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -252,18 +304,19 @@ input {
   outline: none;
 }
 
+select,
+input {
+  height: 34px;
+  padding: 6px 8px;
+  margin-top: 5px;
+}
+
 textarea {
   min-height: 132px;
   resize: vertical;
   padding: 10px;
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 12px;
-}
-
-input {
-  height: 34px;
-  padding: 6px 8px;
-  margin-top: 5px;
 }
 
 input[type="range"] {

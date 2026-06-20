@@ -21,27 +21,42 @@
         <a href="#backtestPanel">回测</a>
         <a href="#integrationPanel">接入</a>
       </nav>
-      <button id="runForecast" class="primaryBtn" type="button">运行推演</button>
+      <button id="runForecast" class="primaryBtn" type="button">分析预测</button>
     </header>
 
     <section id="workbench" class="layoutGrid">
       <aside class="fixturePane">
         <div class="paneHead">
           <div>
-            <span>比赛队列</span>
+            <span>选择赛事</span>
             <strong id="fixtureSource">Demo data</strong>
           </div>
           <button id="refreshFixtures" class="ghostBtn" type="button">刷新</button>
         </div>
-        <div id="fixtureList" class="fixtureList"></div>
-        <div class="importBox">
-          <label for="jsonInput">JSON 导入 / 导出</label>
-          <textarea id="jsonInput" spellcheck="false" placeholder='{"fixtures":[...]}'></textarea>
-          <div class="buttonRow">
-            <button id="importJson" class="ghostBtn" type="button">导入</button>
-            <button id="exportJson" class="ghostBtn" type="button">导出</button>
-          </div>
+        <div id="matchMenu" class="matchMenu" aria-label="赛事菜单">
+          <label>赛事
+            <select id="competitionFilter">
+              <option value="all">全部赛事</option>
+            </select>
+          </label>
+          <label>日期
+            <select id="dateFilter">
+              <option value="all">全部日期</option>
+            </select>
+          </label>
         </div>
+        <div id="fixtureList" class="fixtureList"></div>
+        <details id="developerTools" class="developerTools">
+          <summary>高级 / 开发者工具</summary>
+          <div class="importBox">
+            <label for="jsonInput">赛程 JSON（批量导入 / 自动化）</label>
+            <textarea id="jsonInput" spellcheck="false" placeholder='{"fixtures":[...]}'></textarea>
+            <div class="buttonRow">
+              <button id="importJson" class="ghostBtn" type="button">导入</button>
+              <button id="exportJson" class="ghostBtn" type="button">导出</button>
+            </div>
+          </div>
+        </details>
       </aside>
 
       <section class="centerPane">
@@ -119,7 +134,7 @@
             </div>
             <button id="aiExplain" class="ghostBtn" type="button">生成</button>
           </div>
-          <p id="aiText" class="analysisText">运行推演后显示结构化解释。</p>
+          <p id="aiText" class="analysisText">分析预测后显示结构化解释。</p>
         </section>
 
         <section id="integrationPanel" class="toolPanel">

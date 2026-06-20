@@ -22,7 +22,9 @@ Das Projekt ist provider-neutral. Die optionale AI-Erklärung funktioniert mit j
 
 ## Überblick
 
-World Cup Prediction Lab ist ein lokales Fußball-Analyse-Workbench mit zehn Faktoren, Elo-Differenz, kalibrierten Remis-Untergrenzen, Double-Poisson-Scorematrix, Szenario-Slidern, JSON Import/Export, Backtesting und optionaler AI-Erklärung.
+World Cup Prediction Lab ist ein lokales Fußball-Analyse-Workbench mit menügesteuerter Spielauswahl, zehn Faktoren, Elo-Differenz, kalibrierten Remis-Untergrenzen, Double-Poisson-Scorematrix, Szenario-Slidern, Backtesting, Entwickler-JSON-Tools und optionaler AI-Erklärung.
+
+Normale Nutzer wählen ein Spiel im Match-Menü und starten die Prognose per Klick. JSON Import/Export bleibt im erweiterten Entwicklerbereich für Batch-Daten, Tests und Automatisierung.
 
 ## Vorschau
 
