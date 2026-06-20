@@ -61,6 +61,33 @@ http://127.0.0.1:8798
 npm test
 ```
 
+## Codex Skill
+
+仓库内置了可安装的 Codex skill：
+
+```text
+skills/world-cup-prediction
+```
+
+如果你使用 Codex，可以把该目录复制到本机技能目录：
+
+```powershell
+Copy-Item -Recurse skills/world-cup-prediction "$env:USERPROFILE\.codex\skills\world-cup-prediction"
+```
+
+之后在新对话里可以直接说：
+
+```text
+使用 world-cup-prediction skill，帮我根据这场比赛 JSON 做赛前推演和回测。
+```
+
+技能脚本也可以独立运行：
+
+```bash
+node skills/world-cup-prediction/scripts/forecast.cjs < match.json
+node skills/world-cup-prediction/scripts/backtest.cjs < backtest.json
+```
+
 ## AI 解读
 
 复制 `.env.example` 为 `.env`，然后配置：

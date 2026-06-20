@@ -43,6 +43,33 @@ Run tests:
 npm test
 ```
 
+## Codex Skill
+
+This repository includes an installable Codex skill:
+
+```text
+skills/world-cup-prediction
+```
+
+Copy it into your local Codex skills folder:
+
+```powershell
+Copy-Item -Recurse skills/world-cup-prediction "$env:USERPROFILE\.codex\skills\world-cup-prediction"
+```
+
+Then ask Codex:
+
+```text
+Use $world-cup-prediction to forecast this match JSON and backtest the result.
+```
+
+The bundled scripts also run standalone:
+
+```bash
+node skills/world-cup-prediction/scripts/forecast.cjs < match.json
+node skills/world-cup-prediction/scripts/backtest.cjs < backtest.json
+```
+
 ## AI Explanations
 
 ```bash

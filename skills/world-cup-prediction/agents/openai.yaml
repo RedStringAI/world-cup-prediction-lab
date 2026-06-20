@@ -1,0 +1,4 @@
+interface:
+  display_name: "World Cup Prediction"
+  short_description: "Run explainable World Cup match forecasts."
+  default_prompt: "Use $world-cup-prediction to forecast a World Cup match from team factors and Elo."
